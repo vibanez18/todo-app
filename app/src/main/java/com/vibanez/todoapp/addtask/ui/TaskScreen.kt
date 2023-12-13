@@ -15,21 +15,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissState
-import androidx.compose.material3.DismissValue
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -70,25 +63,6 @@ fun TaskScreen(taskScreenViewModel: TaskScreenViewModel) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TaskListWhitSwipe(taskScreenViewModel: TaskScreenViewModel) {
-    val tasks = taskScreenViewModel.tasks
-    LazyColumn {
-        items(tasks, key = { it.id }) { task ->
-            val state = rememberDismissState(
-                confirmValueChange = {
-                    if (it == DismissValue.DismissedToStart) {
-                        taskScreenViewModel.onItemRemove(task)
-                    }
-                    true
-                }
-            )
-            SwipeToDismissItem(state, task, taskScreenViewModel)
-        }
-    }
-}
-
 @Composable
 fun TaskList(taskScreenViewModel: TaskScreenViewModel) {
     val tasks = taskScreenViewModel.tasks
@@ -100,55 +74,6 @@ fun TaskList(taskScreenViewModel: TaskScreenViewModel) {
             )
         }
     }
-}
-
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-private fun SwipeToDismissItem(
-    state: DismissState,
-    taskModel: TaskModel,
-    taskScreenViewModel: TaskScreenViewModel
-) {
-    SwipeToDismiss(state = state,
-        background = {
-            val color = when (state.dismissDirection) {
-                DismissDirection.StartToEnd -> Color.Transparent
-                DismissDirection.EndToStart -> Color.Red
-                null -> Color.Transparent
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color)
-                    .padding(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "",
-                    tint = Color.White,
-                    modifier = Modifier.align(
-                        Alignment.CenterEnd
-                    )
-                )
-            }
-        },
-        dismissContent = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = taskModel.task, modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 4.dp)
-                )
-                Checkbox(
-                    checked = taskModel.selected,
-                    onCheckedChange = { taskScreenViewModel.onCheckBoxSelected(taskModel) })
-            }
-        })
 }
 
 @Composable

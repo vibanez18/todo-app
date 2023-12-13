@@ -10,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.vibanez.todoapp.addtask.ui.TaskScreen
 import com.vibanez.todoapp.addtask.ui.TaskScreenViewModel
+import com.vibanez.todoapp.addtask.ui.TaskSwipeScreen
 import com.vibanez.todoapp.ui.theme.TodoAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,6 +28,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     TaskScreen(taskScreenViewModel)
+//                    TaskSwipeScreen(taskScreenViewModel)
                 }
             }
         }
