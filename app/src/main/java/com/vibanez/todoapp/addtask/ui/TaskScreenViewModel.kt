@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.vibanez.todoapp.addtask.domain.AddTaskUseCase
 import com.vibanez.todoapp.addtask.domain.GetTaskUseCase
 import com.vibanez.todoapp.addtask.ui.TaskUiState.Success
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class TaskScreenViewModel @Inject constructor(
     private val addTaskUseCase: AddTaskUseCase,
     getTaskUseCase: GetTaskUseCase
