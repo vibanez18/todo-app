@@ -1,6 +1,6 @@
 package com.vibanez.todoapp.addtask.data
 
-import com.vibanez.todoapp.addtask.ui.model.TaskModel
+import com.vibanez.todoapp.addtask.ui.TaskModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.UUID
