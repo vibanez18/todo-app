@@ -55,6 +55,7 @@ android {
 
 val lifecycleVersion = "2.6.2"
 val runtimeLiveData = "1.5.4"
+val roomVersion = "2.6.1"
 
 dependencies {
 
@@ -74,6 +75,11 @@ dependencies {
     // LiveData
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
     implementation("androidx.compose.runtime:runtime-livedata:$runtimeLiveData")
+
+    // Room
+    kapt("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-runtime:$roomVersion")
+    annotationProcessor("androidx.room:room-compiler:$roomVersion")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
