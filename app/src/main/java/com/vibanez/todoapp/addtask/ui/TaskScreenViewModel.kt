@@ -1,7 +1,6 @@
 package com.vibanez.todoapp.addtask.ui
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,7 +20,6 @@ class TaskScreenViewModel @Inject constructor(
     private val addTaskUseCase: AddTaskUseCase,
     getTaskUseCase: GetTaskUseCase
 ) : ViewModel() {
-
     val uiState: StateFlow<TaskUiState> = getTaskUseCase().map(::Success)
         .catch { TaskUiState.Error(it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TaskUiState.Loading)
@@ -32,7 +30,6 @@ class TaskScreenViewModel @Inject constructor(
 
     fun onTaskCreated(task: String) {
         Log.i("task added", task)
-        _tasks.add(TaskModel(task = task))
         _showDialog.value = false
 
         viewModelScope.launch { addTaskUseCase(TaskModel(task = task)) }
@@ -43,19 +40,19 @@ class TaskScreenViewModel @Inject constructor(
     }
 
     fun onCheckBoxSelected(taskModel: TaskModel) {
-        val index = _tasks.indexOf(taskModel)
-        _tasks[index] = _tasks[index].let { it.copy(selected = !it.selected) }
+//        val index = _tasks.indexOf(taskModel)
+//        _tasks[index] = _tasks[index].let { it.copy(selected = !it.selected) }
     }
 
     fun onItemRemove(taskModel: TaskModel) {
-        _tasks
-            .find { it.id == taskModel.id }
-            .let { _tasks.remove(it) }
+//        _tasks
+//            .find { it.id == taskModel.id }
+//            .let { _tasks.remove(it) }
     }
 
     private val _showDialog = MutableLiveData<Boolean>()
     val showDialog: LiveData<Boolean> = _showDialog
 
-    private val _tasks = mutableStateListOf<TaskModel>()
-    val tasks = _tasks as List<TaskModel>
+//    private val _tasks = mutableStateListOf<TaskModel>()
+//    val tasks = _tasks as List<TaskModel>
 }

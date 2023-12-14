@@ -19,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -27,28 +28,56 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 
 
 @Composable
 fun TaskScreen(taskScreenViewModel: TaskScreenViewModel) {
+    val lifecycle = LocalLifecycleOwner.current
     val showDialog: Boolean by taskScreenViewModel.showDialog.observeAsState(false)
+    val uiState by produceState<TaskUiState>(
+        initialValue = TaskUiState.Loading,
+        key1 = lifecycle,
+        key2 = taskScreenViewModel
+    ) {
+        lifecycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
+            taskScreenViewModel.uiState.collect { value = it }
+        }
+    }
 
+    when (uiState) {
+        is TaskUiState.Success -> CreateView(taskScreenViewModel, showDialog, uiState)
+        TaskUiState.Loading -> CircularProgressIndicator()
+        is TaskUiState.Error -> TODO()
+    }
+
+}
+
+@Composable
+fun CreateView(
+    taskScreenViewModel: TaskScreenViewModel,
+    showDialog: Boolean,
+    uiState: TaskUiState
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-        TaskList(taskScreenViewModel = taskScreenViewModel)
+        TaskList((uiState as TaskUiState.Success).tasks, taskScreenViewModel)
         AddTaskDialog(
             show = showDialog,
             onDismiss = { taskScreenViewModel.onDialogClose() },
@@ -63,8 +92,7 @@ fun TaskScreen(taskScreenViewModel: TaskScreenViewModel) {
 }
 
 @Composable
-fun TaskList(taskScreenViewModel: TaskScreenViewModel) {
-    val tasks = taskScreenViewModel.tasks
+fun TaskList(tasks: List<TaskModel>, taskScreenViewModel: TaskScreenViewModel) {
     LazyColumn {
         items(tasks, key = { it.id }) {
             ItemTask(
@@ -145,7 +173,7 @@ fun AddTaskDialog(show: Boolean, onDismiss: () -> Unit, onTaskAdded: (String) ->
                 Button(onClick = {
                     onTaskAdded(myTask)
                     myTask = ""
-                }, modifier = Modifier.fillMaxWidth(), enabled = !myTask.isEmpty()) {
+                }, modifier = Modifier.fillMaxWidth(), enabled = myTask.isNotEmpty()) {
                     Text(text = "Create task")
                 }
             }
