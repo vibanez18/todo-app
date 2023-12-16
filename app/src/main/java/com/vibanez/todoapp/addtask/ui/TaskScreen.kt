@@ -1,5 +1,6 @@
 package com.vibanez.todoapp.addtask.ui
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -19,24 +20,30 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.vibanez.todoapp.addtask.ui.model.TaskModel
 
 
@@ -44,28 +51,47 @@ import com.vibanez.todoapp.addtask.ui.model.TaskModel
 fun TaskScreen(taskScreenViewModel: TaskScreenViewModel) {
     val showDialog: Boolean by taskScreenViewModel.showDialog.observeAsState(false)
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
+    val uiState by produceState<TaskUiState>(
+        initialValue = TaskUiState.Loading,
+        key1 = lifecycle,
+        key2 = taskScreenViewModel
     ) {
-        TaskList(taskScreenViewModel = taskScreenViewModel)
-        AddTaskDialog(
-            show = showDialog,
-            onDismiss = { taskScreenViewModel.onDialogClose() },
-            onTaskAdded = { taskScreenViewModel.onTaskCreated(it) })
-        FabDialog(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(getGeneralPadding()),
-            taskScreenViewModel = taskScreenViewModel
-        )
+        lifecycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
+            taskScreenViewModel.uiState.collect { value = it }
+        }
+    }
+
+    when(uiState) {
+        is TaskUiState.Error -> {}
+        TaskUiState.Loading -> { CircularProgressIndicator() }
+        is TaskUiState.Success -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+            ) {
+                TaskList((uiState as TaskUiState.Success).tasks, taskScreenViewModel)
+                AddTaskDialog(
+                    show = showDialog,
+                    onDismiss = { taskScreenViewModel.onDialogClose() },
+                    onTaskAdded = { taskScreenViewModel.onTaskCreated(it) })
+                FabDialog(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(getGeneralPadding()),
+                    taskScreenViewModel = taskScreenViewModel
+                )
+            }
+        }
     }
 }
 
 @Composable
-fun TaskList(taskScreenViewModel: TaskScreenViewModel) {
-    val tasks = taskScreenViewModel.tasks
+fun TaskList(tasks: List<TaskModel>, taskScreenViewModel: TaskScreenViewModel) {
+//    val tasks = taskScreenViewModel.tasks
+    tasks.forEach { Log.i("task added", it.task) }
     LazyColumn {
         items(tasks, key = { it.id }) {
             ItemTask(

@@ -10,7 +10,17 @@ import javax.inject.Singleton
 @Singleton
 class TaskRepository @Inject constructor(private val taskDao: TaskDao) {
 
-    fun findAll(): Flow<List<TaskModel>> = taskDao.findAll().map { items ->
+//    fun findAll(): Flow<List<TaskModel>> = taskDao.findAll().map { items ->
+//        items.map {
+//            TaskModel(
+//                id = it.id.toUUID(),
+//                task = it.task,
+//                selected = it.selected
+//            )
+//        }
+//    }
+
+    val tasks: Flow<List<TaskModel>> = taskDao.findAll().map { items ->
         items.map {
             TaskModel(
                 id = it.id.toUUID(),
