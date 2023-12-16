@@ -8,15 +8,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.vibanez.todoapp.addtask.ui.TaskScreen
-import com.vibanez.todoapp.addtask.ui.TaskScreenViewModel
+import com.vibanez.todoapp.addtask.ui.TasksScreen
+import com.vibanez.todoapp.addtask.ui.TasksViewModel
 import com.vibanez.todoapp.ui.theme.TodoAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val taskScreenViewModel: TaskScreenViewModel by viewModels()
+    private val taskScreenViewModel: TasksViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TaskScreen(taskScreenViewModel)
+                    TasksScreen(taskScreenViewModel)
 //                    TaskSwipeScreen(taskScreenViewModel)
                 }
             }

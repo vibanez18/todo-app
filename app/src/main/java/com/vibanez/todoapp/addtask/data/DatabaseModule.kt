@@ -11,16 +11,16 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class TodoDatabaseModule {
+class DatabaseModule {
 
-    companion object {
-        const val DATABASE_NAME = "TaskDatabase"
+    @Provides
+    fun provideTaskDao(todoDatabase: TodoDatabase): TaskDao {
+        return todoDatabase.taskDao()
     }
 
     @Provides
-    fun providesTaskDao(todoDatabase: TodoDatabase): TaskDao = todoDatabase.taskDao()
-    @Provides
     @Singleton
-    fun provideTodoDatabase(@ApplicationContext context: Context): TodoDatabase =
-        Room.databaseBuilder(context, TodoDatabase::class.java, DATABASE_NAME).build()
+    fun provideTodoDatabase(@ApplicationContext appContext: Context): TodoDatabase {
+        return Room.databaseBuilder(appContext, TodoDatabase::class.java, "TaskDatabase").build()
+    }
 }
