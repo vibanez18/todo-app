@@ -1,4 +1,4 @@
-package com.vibanez.todoapp.addtask.ui.model
+package com.vibanez.todoapp.addtask.ui
 
 import java.util.UUID
 
